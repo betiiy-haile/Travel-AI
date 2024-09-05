@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  /* background-color: #2a2078; */
+  background-color: #0F172A;
+  /* background-image: url("https://www.transparenttextures.com/patterns/egg-shell.png"); */
+  background-image: url("https://www.transparenttextures.com/patterns/black-linen.png");
+  /* background-image: ("https://www.transparenttextures.com/patterns/bright-squares.png"); */
+  /* background-image: url("https://www.transparenttextures.com/patterns/broken-noise.png"); */
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500;
+}
+
+.button-gradient {
+  @apply bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:scale-105;
+}
+
+.bg-gradient {
+  @apply bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-white;
+}

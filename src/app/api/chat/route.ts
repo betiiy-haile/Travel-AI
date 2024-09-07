@@ -2,26 +2,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+
+// let conversationHistory: any[] = []
+
 export async function POST(req: NextRequest) {
     try {
         
-            const { message } = await req.json(); // Get user message from request body
+            const { contents, message } = await req.json(); // Get user message from request body
             const apiKey = process.env.API_KEY; // Use your API key from the environment variables
 
-            if (!message || !apiKey) {
+            if (!contents || !apiKey) {
                 return NextResponse.json({ error: 'Invalid request or missing API key' }, { status: 400 });
             }
             const genAI = new GoogleGenerativeAI(apiKey);
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const result = await model.generateContent(message);
 
-            const responseText = await result.response.text();
-
-            console.log("response", responseText)
-
+            const chat = await model.startChat({
+                history: contents
+            })
 
 
-            return NextResponse.json({ response: responseText }, { status: 200 });
+            // const responseText = await result.response.text();
+            let result = await chat.sendMessage(message);
+            console.log("response" , result.response.text());
+
+
+            return NextResponse.json({ response: result.response.text() }, { status: 200 });
 
 
     } catch (error) {

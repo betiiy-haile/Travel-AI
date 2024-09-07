@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Sidebar from "../_components/Sidebar";
 import { IoSend } from 'react-icons/io5';
-import { saveChatHistory, handleNewMessage } from '@/actions/chats';
+import { createNewChat, handleNewMessage } from '@/actions/chats';
+import { useRouter } from 'next/navigation';
 import Markdown from 'markdown-to-jsx'
 
 interface Message {
@@ -14,46 +15,44 @@ interface Message {
 const ChatPage = () => {
     const [contents, setContents] = useState<Message[]>([]);
     const [input, setInput] = useState('');
+    const [chatId, setChatId] = useState<string | null>(null);  
+    const router = useRouter();
 
-    const createChatMessage = (role: string, text: string) => ({
+
+    const createChatMessage = (role: "user" | "model", text: string) => ({
         role,
         parts: [{ text }]
     });
 
+
+
     // const handleSend = async () => {
     //     if (!input.trim()) return;
 
-        // const newMessage = createChatMessage("user", input);
-        // const updatedContents = JSON.parse(JSON.stringify([...contents, newMessage])); // Ensure plain objects
+    //     const newMessage = createChatMessage("user", input);
+    //     const updatedContents = JSON.parse(JSON.stringify([...contents, newMessage])); 
 
-        // setContents(updatedContents);
 
     //     try {
-    //         // Insert the chat to Supabase
-    //         const addChatResponse = await saveChatHistory(updatedContents); // Use updatedContents here
-    //         console.log("Response from addChat:", addChatResponse);
-            
+            // const res = await fetch('/api/chat', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({ contents: updatedContents, message: input }),
+            // });
 
-    //         // Clear the input
-    //         setInput('');
+            // const data = await res.json();
+            // const modelResponse = data?.response || ''; 
 
-    //         // Send the user message to your chat API (e.g., Gemini)
-    //         const res = await fetch('/api/chat', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ contents: updatedContents, message: input }),
-    //         });
+    //         await handleNewMessage("4", input, modelResponse);
 
-    //         const data = await res.json();
-    //         console.log("Response from Gemini:", data);
-
-    //         // Add the model's response to the chat
+    //         setInput(''); 
     //         setContents((prevMessages) => [
     //             ...prevMessages,
-    //             createChatMessage("model", data?.response),
-    //         ] as Message[]);
+    //             { role: "user", parts: [{ text: input }] },
+    //             { role: "model", parts: [{ text: modelResponse }] },
+    //         ]);
     //     } catch (error) {
     //         console.error('Error sending message:', error);
     //     }
@@ -64,12 +63,11 @@ const ChatPage = () => {
         if (!input.trim()) return;
 
         const newMessage = createChatMessage("user", input);
-        const updatedContents = JSON.parse(JSON.stringify([...contents, newMessage])); // Ensure plain objects
-
-        // setContents(updatedContents);
+        const updatedContents = [...contents, newMessage];
 
         try {
-            // Send the user message to your chat API (e.g., Gemini)
+
+
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
@@ -79,20 +77,25 @@ const ChatPage = () => {
             });
 
             const data = await res.json();
-            const modelResponse = data?.response || ''; // Get the model's response
+            const modelResponse = data?.response || ''; 
 
-            // Update chat history in the database
-            await handleNewMessage(3, input, modelResponse); // Replace with the actual chat ID
 
-            // Clear the input
-            setInput('');
+            if (!chatId) {
+                const newChatId = await createNewChat([...updatedContents, createChatMessage("model", modelResponse)]);  
+                setChatId(newChatId);  
+                router.push(`/chat/${newChatId}`);
+            } else {
+                await handleNewMessage(chatId, input, modelResponse); 
+            }
 
-            // Optionally, update local state to reflect the new messages
             setContents((prevMessages) => [
                 ...prevMessages,
                 { role: "user", parts: [{ text: input }] },
                 { role: "model", parts: [{ text: modelResponse }] },
             ]);
+
+            // Clear input after sending the message
+            setInput('');
         } catch (error) {
             console.error('Error sending message:', error);
         }
@@ -114,7 +117,6 @@ const ChatPage = () => {
                         {contents.map((msg, index) => (
                             <div key={index} className={`flex items-start ${msg.role == 'model' ? 'bg-gray-700' : 'bg-blue-600'} p-3 rounded-lg`}>
                                 <p className="font-semibold text-white">{msg.role == 'model' ? 'Response:' : 'You:'}</p>
-                                { /*<p>{msg.text}</p> */ }
                                 <Markdown>{msg.parts[0].text}</Markdown>
                             </div>
                         ))}

@@ -1,6 +1,11 @@
 'use server'
 import { createClient } from "@/utils/supabase/server";
 
+interface Message {
+    parts: { text: string }[];
+    role: 'user' | 'model';
+}
+
 // export const getChats = async () => {
 //     const supabase = await createClient();
 
@@ -12,7 +17,27 @@ import { createClient } from "@/utils/supabase/server";
 // }
 
 
-export const saveChatHistory = async (messages: any) => {
+export const createNewChat = async (messages: Message[]) => {
+    const defaultName = "New Chat";
+    const supabase = await createClient();
+
+    // Insert the new chat and request the 'id' of the inserted row
+    const { data, error } = await supabase
+        .from('chats')
+        .insert([{ chat: messages, name: defaultName }])
+        .select('id')  // Request to return the 'id' of the newly inserted row
+
+    if (error) {
+        console.log("Error saving chat History:", error);
+        throw new Error("Failed to create chat");
+    }
+
+    console.log("data", data);
+    return data ? data[0].id : null;  // Return the 'id' of the newly created chat
+};
+
+
+export const saveChatHistory = async (messages: Message[]) => {
     const supabase = await createClient()
     const { data, error } = await supabase
         .from('chats')
@@ -30,7 +55,7 @@ export const saveChatHistory = async (messages: any) => {
 }
 
 
-export const fetchChatHistory = async (chatId: number) => {
+export const fetchChatHistory = async (chatId: String) => {
     const supabase = await createClient()
     const { data, error } = await supabase
         .from('chats')
@@ -38,15 +63,17 @@ export const fetchChatHistory = async (chatId: number) => {
         .eq('id', chatId)
         .single();
 
+    console.log("chats", data)
+
     if (error) {
         throw new Error(`Error fetching chat: ${error.message}`);
     }
 
-    return data.chat || [];
+    return data || [];
 };
 
 
-export const updateChatHistory = async (chatId: number, updatedChat: any[]) => {
+export const updateChatHistory = async (chatId: string, updatedChat: any[]) => {
     const supabase = await createClient()
     const { error } = await supabase
         .from('chats')
@@ -59,10 +86,10 @@ export const updateChatHistory = async (chatId: number, updatedChat: any[]) => {
 };
 
 
-export const handleNewMessage = async (chatId: number, userMessage: string, modelResponse: string) => {
+export const handleNewMessage = async (chatId: string, userMessage: string, modelResponse: string) => {
     const supabase = await createClient()
     try {
-        const existingChat = await fetchChatHistory(chatId);
+        const { chat: existingChat } = await fetchChatHistory(chatId);
 
         const newUserMessage = { role: "user", parts: [{ text: userMessage }] };
         const newModelMessage = { role: "model", parts: [{ text: modelResponse }] };

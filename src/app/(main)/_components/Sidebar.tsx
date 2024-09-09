@@ -7,7 +7,8 @@ import { GoSidebarCollapse } from "react-icons/go";
 import { getAllChats } from '@/actions/chats';
 import Link from 'next/link';
 import { useRouter } from "next/navigation"
-import { signOut } from '@/actions/auth';
+import { signOut } from '@/actions/auth'
+import LogoutModal from './LogoutModal';
 
 interface Message {
     parts: { text: string }[];
@@ -26,6 +27,7 @@ const Sidebar = () => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [chats, setChats] = useState<Chat[]>([])
+    const [showLogoutModal, setShowLogoutModal] = useState(false); 
     const router = useRouter();
 
     useEffect(() => {
@@ -46,9 +48,19 @@ const Sidebar = () => {
         setIsExpanded(!isExpanded);
     };
 
-    const handleLogout = async () => {
-        const res = await signOut()
-    }
+    const handleLogoutClick = () => {
+        setShowLogoutModal(true); // Show the modal
+    };
+
+    const handleLogoutConfirm = async () => {
+        setShowLogoutModal(false); 
+        const res = await signOut();
+        router.push('/login'); // Redirect to login after successful logout
+    };
+
+    const handleLogoutCancel = () => {
+        setShowLogoutModal(false); // Close the modal
+    };
 
     return (
         <div className={`h-screen bg-gray-800  text-white p-5 transition-all duration-300 ${isExpanded ? 'w-80' : 'w-24'}`}>
@@ -94,10 +106,18 @@ const Sidebar = () => {
                 <button className="button-gradient text-white p-2 rounded-lg w-full  transition" onClick={() => router.push('/chat')}>
                     <span className="flex items-center justify-center gap-2"> <MdOutlineAdd className='text-2xl p-1' /> {isExpanded && 'New Chat'}</span>
                 </button>
-                <button className=" text-red-500 text-center p-2 rounded-lg w-full transition bg-transparent border border-red-500 hover:scale-105" onClick={handleLogout}>
+                <button className=" text-red-500 text-center p-2 rounded-lg w-full transition bg-transparent border border-red-500 hover:scale-105" onClick={handleLogoutClick}>
                     <span className="flex items-center justify-center gap-2"> <MdLogout className='text-2xl p-1'/> {isExpanded && 'Logout'}</span> 
                 </button>
             </div>
+
+            {showLogoutModal && (
+                <LogoutModal
+                    onConfirm={handleLogoutConfirm}
+                    onCancel={handleLogoutCancel}
+                />
+            )}
+
         </div>
     );
 };

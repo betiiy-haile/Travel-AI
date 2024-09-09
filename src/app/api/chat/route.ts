@@ -1,34 +1,31 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-
-// let conversationHistory: any[] = []
-
 export async function POST(req: NextRequest) {
     try {
-        
-            const { contents, message } = await req.json(); // Get user message from request body
-            const apiKey = process.env.API_KEY; // Use your API key from the environment variables
+        const { contents, message } = await req.json();
+        const apiKey = process.env.API_KEY;
 
-            if (!contents || !apiKey) {
-                return NextResponse.json({ error: 'Invalid request or missing API key' }, { status: 400 });
-            }
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        if (!contents || !apiKey) {
+            return NextResponse.json({ error: 'Invalid request or missing API key' }, { status: 400 });
+        }
 
-            const chat = await model.startChat({
-                history: contents
-            })
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+        const chat = await model.startChat({
+            history: contents
+        });
 
-            // const responseText = await result.response.text();
-            let result = await chat.sendMessage(message);
-            console.log("response" , result.response.text());
+        let result = await chat.sendMessage(message);
 
+        const titleMessage = "Summarize this conversation in a short, meaningful title. a short phrase that i can directly use as a converstation name";
+        let titleResult = await chat.sendMessage(titleMessage);
 
-            return NextResponse.json({ response: result.response.text() }, { status: 200 });
-
+        return NextResponse.json({
+            response: result.response.text(),
+            title: titleResult.response.text()  // Return the generated title
+        }, { status: 200 });
 
     } catch (error) {
         console.error("Error:", error);

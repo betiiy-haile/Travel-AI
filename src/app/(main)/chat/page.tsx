@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from "../_components/Sidebar";
 import { IoSend } from 'react-icons/io5';
 import { createNewChat, handleNewMessage } from '@/actions/chats';
 import { useRouter } from 'next/navigation';
 import Markdown from 'markdown-to-jsx'
+import { createClient } from '@/utils/supabase/client';
 
 interface Message {
     parts: { text: string }[];
@@ -18,46 +19,27 @@ const ChatPage = () => {
     const [chatId, setChatId] = useState<string | null>(null);  
     const router = useRouter();
 
+    const supabase = createClient();
+
+    // useEffect(() => {
+    //     const checkAuth = async () => {
+    //         const { data, error } = await supabase.auth.getSession();
+    //         const { data: userData, error: userError} = await supabase.auth.getUser();
+    //         if (error || !data.session) {
+    //             router.push('/login'); // Redirect to login if there's no session
+    //         } else {
+    //             console.log('User authenticated:', data.session.user);
+    //         }
+    //     };
+
+    //     checkAuth();
+    // }, []);
+
 
     const createChatMessage = (role: "user" | "model", text: string) => ({
         role,
         parts: [{ text }]
     });
-
-
-
-    // const handleSend = async () => {
-    //     if (!input.trim()) return;
-
-    //     const newMessage = createChatMessage("user", input);
-    //     const updatedContents = JSON.parse(JSON.stringify([...contents, newMessage])); 
-
-
-    //     try {
-            // const res = await fetch('/api/chat', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ contents: updatedContents, message: input }),
-            // });
-
-            // const data = await res.json();
-            // const modelResponse = data?.response || ''; 
-
-    //         await handleNewMessage("4", input, modelResponse);
-
-    //         setInput(''); 
-    //         setContents((prevMessages) => [
-    //             ...prevMessages,
-    //             { role: "user", parts: [{ text: input }] },
-    //             { role: "model", parts: [{ text: modelResponse }] },
-    //         ]);
-    //     } catch (error) {
-    //         console.error('Error sending message:', error);
-    //     }
-    // };
-
 
     const handleSend = async () => {
         if (!input.trim()) return;
@@ -66,8 +48,6 @@ const ChatPage = () => {
         const updatedContents = [...contents, newMessage];
 
         try {
-
-
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
@@ -76,22 +56,22 @@ const ChatPage = () => {
                 body: JSON.stringify({ contents: updatedContents, message: input }),
             });
 
-            const data = await res.json();
-            const modelResponse = data?.response || ''; 
-
+            const { response, title } = await res.json();
+            console.log("title response from gemini", title);
+            // const modelResponse = data?.response || ''; 
 
             if (!chatId) {
-                const newChatId = await createNewChat([...updatedContents, createChatMessage("model", modelResponse)]);  
+                const newChatId = await createNewChat([...updatedContents, createChatMessage("model", response)], title);  
                 setChatId(newChatId);  
                 router.push(`/chat/${newChatId}`);
             } else {
-                await handleNewMessage(chatId, input, modelResponse); 
+                await handleNewMessage(chatId, input, response); 
             }
 
             setContents((prevMessages) => [
                 ...prevMessages,
                 { role: "user", parts: [{ text: input }] },
-                { role: "model", parts: [{ text: modelResponse }] },
+                { role: "model", parts: [{ text: response }] },
             ]);
 
             // Clear input after sending the message

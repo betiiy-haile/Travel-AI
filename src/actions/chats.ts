@@ -6,26 +6,28 @@ interface Message {
     role: 'user' | 'model';
 }
 
-// export const getChats = async () => {
-//     const supabase = await createClient();
-
-//     const { data, error } = await supabase
-//         .from("chats")
-//         .select("*")
-//         .order("id", { ascending: false });
-//     return { data, error };
-// }
-
-
-export const createNewChat = async (messages: Message[]) => {
-    const defaultName = "New Chat";
+export const getAllChats = async () => {
     const supabase = await createClient();
 
-    // Insert the new chat and request the 'id' of the inserted row
+    const { data, error } = await supabase
+        .from("chats")
+        .select("*")
+        .order("id", { ascending: false });
+    return { data, error };
+}
+
+export const createNewChat = async (messages: Message[], name?: string) => {
+    const defaultName = name || "New Chat";
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+
+    // Insert the new chat with the user's ID
     const { data, error } = await supabase
         .from('chats')
-        .insert([{ chat: messages, name: defaultName }])
-        .select('id')  // Request to return the 'id' of the newly inserted row
+        .insert([{ chat: messages, name: defaultName, user_id: userId }])
+        .select('id');  // Request to return the 'id' of the newly inserted row
 
     if (error) {
         console.log("Error saving chat History:", error);
@@ -35,6 +37,7 @@ export const createNewChat = async (messages: Message[]) => {
     console.log("data", data);
     return data ? data[0].id : null;  // Return the 'id' of the newly created chat
 };
+
 
 
 export const saveChatHistory = async (messages: Message[]) => {
@@ -56,14 +59,19 @@ export const saveChatHistory = async (messages: Message[]) => {
 
 
 export const fetchChatHistory = async (chatId: String) => {
+
     const supabase = await createClient()
+    const { data: { user }} = await supabase.auth.getUser();
+
+    const userId = user?.id;
+
     const { data, error } = await supabase
         .from('chats')
         .select('chat')
         .eq('id', chatId)
         .single();
 
-    console.log("chats", data)
+    console.log("chats from fetchchats", data)
 
     if (error) {
         throw new Error(`Error fetching chat: ${error.message}`);
@@ -75,6 +83,10 @@ export const fetchChatHistory = async (chatId: String) => {
 
 export const updateChatHistory = async (chatId: string, updatedChat: any[]) => {
     const supabase = await createClient()
+    const { data: { user }} = await supabase.auth.getUser();
+    const userId = user?.id;
+
+
     const { error } = await supabase
         .from('chats')
         .update({ chat: updatedChat })
@@ -90,6 +102,8 @@ export const handleNewMessage = async (chatId: string, userMessage: string, mode
     const supabase = await createClient()
     try {
         const { chat: existingChat } = await fetchChatHistory(chatId);
+
+        console.log("existingChat", existingChat);
 
         const newUserMessage = { role: "user", parts: [{ text: userMessage }] };
         const newModelMessage = { role: "model", parts: [{ text: modelResponse }] };

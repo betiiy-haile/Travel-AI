@@ -32,8 +32,11 @@ const ChatDetailPage = () => {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const updatedContents = JSON.parse(JSON.stringify([...contents, { role: "user", parts: [{ text: input }] }]));
+    console.log("handle send message", input)
+    
 
+    const updatedContents = JSON.parse(JSON.stringify([...contents, { role: "user", parts: [{ text: input }] }]));
+    console.log("updated contents", updatedContents)
 
     try {
       const res = await fetch('/api/chat', {
@@ -44,10 +47,12 @@ const ChatDetailPage = () => {
         body: JSON.stringify({ contents: updatedContents, message: input }),
       });
 
+      console.log("res from gemini api", res)
       const data = await res.json();
       const modelResponse = data?.response || '';
+      
 
-      await handleNewMessage("4", input, modelResponse);
+      await handleNewMessage(chatId as string, input, modelResponse);
 
       setInput('');
       setContents((prevMessages) => [
@@ -61,10 +66,6 @@ const ChatDetailPage = () => {
   };
 
 
-
-
-
-
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -73,10 +74,9 @@ const ChatDetailPage = () => {
         <div className="shadow-lg rounded-lg p-6 h-full relative ">
           <h2 className="text-2xl font-bold mb-4 text-white">Chat with Gemini</h2>
           <div className="flex flex-col space-y-4 overflow-y-auto h-[calc(100%-7rem)]">
-            {contents.map((msg, index) => (
+            {contents && contents.map((msg, index) => (
               <div key={index} className={`flex items-start ${msg.role == 'model' ? 'bg-gray-700' : 'bg-blue-600'} p-3 rounded-lg`}>
                 <p className="font-semibold text-white">{msg.role == 'model' ? 'Response:' : 'You:'}</p>
-                { /*<p>{msg.text}</p> */}
                 <Markdown>{msg.parts[0].text}</Markdown>
               </div>
             ))}

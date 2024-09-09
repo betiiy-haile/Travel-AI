@@ -1,7 +1,32 @@
-import React from 'react';
+'use client'
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { signup } from '@/actions/auth';
 
 const Page = () => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setLoading(true);
+
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('password', password);
+
+
+        try {
+            const res = await signup(formData);
+        } catch (err: any) {
+            console.log('Signup failed. Please try again.', err);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="flex h-screen ">
 
@@ -43,17 +68,18 @@ const Page = () => {
                     <p className="text-gray-400 text-center mb-8">
                         Empower your experience with personalized AI-powered recommendations!
                     </p>
-                    <form>
+                    <form onSubmit={handleSignup}>
                         <div className="mb-4">
                             <label className="block text-white mb-2" htmlFor="email">Email Address*</label>
-                            <input className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" type="email" id="email" placeholder="your_email@domain.com" required />
+                            <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" type="email" id="email" placeholder="your_email@domain.com" required />
                         </div>
                         <div className="mb-6">
                             <label className="block text-white mb-2" htmlFor="password">Password*</label>
-                            <input className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" type="password" id="password" placeholder="Enter password" required />
+                            <input value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" type="password" id="password" placeholder="Enter password" required />
                         </div>
-                        <button className="w-full button-gradient p-3 rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-105 transition-transform duration-200" type="submit">
-                            Get Started Free
+                        <button className="w-full button-gradient p-3 rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-105 transition-transform duration-200"
+                            type="submit" disabled={loading}>
+                            {loading ? 'Signing up...' : 'Get Started Free'}
                         </button>
                     </form>
 

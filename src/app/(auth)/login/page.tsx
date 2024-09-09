@@ -2,22 +2,52 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { signInWithEmail, googleLogin } from '@/actions/auth';  // Add your auth actions here
 
 const Page = () => {
 
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
 
-    const handleSubmit = () => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage(''); 
+ 
+        const formData = new FormData();
+        formData.append('email', email);   
 
+        try {
+            const res = await signInWithEmail(formData);
+            console.log("res from passwordless Login", res)
+            setMessage('Check your email for the login link!');
+        } catch (err: any) {
+            setMessage('Login failed. Please try again.');
+            console.log('Login failed. Please try again.', err);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        setMessage('');
+
+        try {
+            await googleLogin(); // Call Google login action
+        } catch (err: any) {
+            setMessage('Google login failed. Please try again.');
+            console.log('Google login failed.', err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
         <div className="flex h-screen ">
 
-
-
-            {/* Left Side - Chat Area */}
+            {/* Left Side - Information */}
             <div className="flex-1 bg-gradient relative flex items-center justify-center">
 
                 <div className='absolute top-0 left-0 bg-black opacity-40 w-full h-full' />
@@ -43,10 +73,7 @@ const Page = () => {
                 </div>
             </div>
 
-
-
-
-            {/* Right Side - Sign-Up Form */}
+            {/* Right Side - Login Form */}
             <div className="flex-1 p-12 flex items-center justify-center">
                 <div className="p-8 rounded-lg shadow-xl max-w-md w-full">
                     <h2 className="text-3xl font-bold text-white mb-6 text-center">Login to Your Account</h2>
@@ -58,27 +85,28 @@ const Page = () => {
                             <label className="block text-white mb-2" htmlFor="email">Email Address*</label>
                             <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" type="email" id="email" placeholder="your_email@domain.com" required />
                         </div>
-                        <div className="mb-6">
-                            <label className="block text-white mb-2" htmlFor="password">Password*</label>
-                            <input value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" type="password" id="password" placeholder="Enter password" required />
-                        </div>
-                        <button className="w-full button-gradient p-3 rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-105 transition-transform duration-200" type="submit">
-                            Login
+                        <button className="w-full button-gradient p-3 rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-105 transition-transform duration-200" type="submit" disabled={loading}>
+                            {loading ? 'Sending Magic Link...' : 'Send Magic Link'}
                         </button>
                     </form>
+
+                    {message && (
+                        <p className="text-green-400 mt-6 text-center">
+                            {message}
+                        </p>
+                    )}
 
                     <p className="text-gray-400 mt-6 text-center">
                         Don{"'"}t have an account? <Link href="/sign-up" className="text-blue-400 hover:underline">Sign Up</Link>
                     </p>
 
                     <div className="mt-8">
-                        <button className="w-full bg-blue-600 text-white p-3 rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-105 transition-transform duration-200">
+                        <button onClick={handleGoogleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-105 transition-transform duration-200">
                             Continue with Google
                         </button>
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }

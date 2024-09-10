@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation"
 import { signOut } from '@/actions/auth'
 import LogoutModal from './LogoutModal';
+import ChatList from './ChatLists';
 
 interface Message {
     parts: { text: string }[];
@@ -17,9 +18,10 @@ interface Message {
 
 interface Chat {
     id: string,
-    created_At: string,
+    created_at: string,
     name: string,
-    chat: Message[]
+    chat: Message[],
+    user_id: string
 }
 
 
@@ -30,12 +32,13 @@ const Sidebar = () => {
     const [showLogoutModal, setShowLogoutModal] = useState(false); 
     const router = useRouter();
 
+    const fetchChats = async () => {
+        const { data, error } = await getAllChats();
+        console.log("data", data)
+        setChats(data as any || [])
+    }
+
     useEffect(() => {
-        const fetchChats = async () => {
-            const { data, error } = await getAllChats();
-            console.log("data", data)
-            setChats(data as any || [])
-        }
         fetchChats();
     }, [])
 
@@ -49,7 +52,7 @@ const Sidebar = () => {
     };
 
     const handleLogoutClick = () => {
-        setShowLogoutModal(true); // Show the modal
+        setShowLogoutModal(true); 
     };
 
     const handleLogoutConfirm = async () => {
@@ -63,7 +66,7 @@ const Sidebar = () => {
     };
 
     return (
-        <div className={`h-screen bg-gray-800  text-white p-5 transition-all duration-300 ${isExpanded ? 'w-80' : 'w-24'}`}>
+        <div className={`h-screen bg-gray-800  text-white p-5 transition-all duration-300 ${isExpanded ? 'w-[340px]' : 'w-24'}`}>
             <div className='flex items-center justify-center mb-4'>
                 <h2 className={`text-lg flex-1 font-bold  transition-opacity duration-300 ${isExpanded ? 'visible' : 'hidden'}`}>My Chats</h2>
                 {isExpanded ? <GoSidebarExpand size={32} onClick={toggleSidebar} className="text-gray-400" /> : <GoSidebarCollapse size={32} onClick={toggleSidebar} className="text-gray-400" />}
@@ -80,22 +83,7 @@ const Sidebar = () => {
                 }
                 
             </div>
-            <div className="space-y-2 overflow-y-auto h-[calc(100vh-320px)]">
-                {filteredChats.map((chat: any, index: any) => (
-                
-                    <Link
-                        href={`/chat/${chat.id}`}
-                        key={index}
-                        className="block p-2 rounded-lg  hover:bg-gray-700 transition w-full cursor-pointer"
-                    >
-                        <div className="flex justify-between mb-1">
-                            <span className={`${isExpanded ? 'block' : 'hidden'}`}>{chat.name}</span>
-                            <span className="text-gray-400 text-sm">{chat.created_At}</span>
-                        </div>
-                        <p className={`text-gray-300 text-sm ${isExpanded ? 'block' : 'hidden'}`}>{chat.chat[0].parts[0].text}</p>
-                    </Link>
-                ))}
-            </div>
+            <ChatList filteredChats={filteredChats as Chat[]} isExpanded={isExpanded} fetchChats={fetchChats}/>
             <div className="mt-4 flex flex-col gap-4">
                 <div className='flex items-center gap-4 w-full'>
                     <div className='bg-green-700 flex items-center justify-center p-4 w-12 h-12 rounded-full'>B</div>

@@ -117,4 +117,28 @@ export const handleNewMessage = async (chatId: string, userMessage: string, mode
     }
 };
 
+export const deleteChat = async (chatId: string) => {
+    const supabase = await createClient();
+
+    // Get the currently logged-in user's ID
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const userId = user?.id;
+
+    if (authError || !userId) {
+        throw new Error("User not authenticated");
+    }
+
+    const { error } = await supabase
+        .from('chats')
+        .delete()
+        .eq('id', chatId); 
+
+    if (error) {
+        throw new Error(`Error deleting chat: ${error.message}`);
+    }
+
+    return { success: true, message: 'Chat deleted successfully' };
+};
+
+
 

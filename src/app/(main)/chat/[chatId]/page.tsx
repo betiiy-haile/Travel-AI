@@ -27,7 +27,7 @@ const ChatDetailPage = () => {
    fetchChat();
   }, [chatId])
 
-  console.log("contents", contents)
+  // console.log("contents", contents)
 
   const handleSend = async () => {
     if (!input.trim()) return;

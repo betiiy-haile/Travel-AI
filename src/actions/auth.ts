@@ -64,15 +64,16 @@ export const signInWithEmail = async (formData: FormData) => {
     const supabase = await createClient()
 
     const email = formData.get('email') as string;
-
+    console.log("email", email)
     const { data, error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-            // set this to false if you do not want the user to be automatically signed up
-            shouldCreateUser: false,
+            shouldCreateUser: true,
             emailRedirectTo: 'http://localhost:3000/chat',
         },
     })
+
+    console.log("data", data, error)
 }
 
 export const signOut = async () => {

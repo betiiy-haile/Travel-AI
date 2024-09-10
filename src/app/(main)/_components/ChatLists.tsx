@@ -52,28 +52,30 @@ const ChatList = ({ filteredChats, isExpanded, fetchChats }: { filteredChats: Ch
             {filteredChats.length === 0 && (
                 <p className={`text-gray-400 text-sm text-center py-4`}>No chats found</p>
             )}
-            {filteredChats.map((chat, index) => (
-                <div key={index} className="flex items-center gap-4 rounded-lg hover:bg-gray-700 p-2  justify-between">
-                    <Link
-                        href={`/chat/${chat.id}`}
-                        className="block flex-1  transition w-full cursor-pointer"
-                    >
-                        <div className="flex justify-between mb-1">
-                            <span className={`${isExpanded ? 'block' : 'hidden'}`}>{chat.name}</span>
-                            <span className="text-gray-400 text-sm">{formatDate(chat.created_at)}</span>
-                        </div>
-                        <p className={`text-gray-300 text-sm ${isExpanded ? 'block' : 'hidden'}`}>
-                            {chat.chat[0].parts[0].text}
-                        </p>
-                    </Link>
-                    <button
-                        onClick={() => handleDeleteClick(chat.id)}
-                        className=" text-red-500 hover:text-red-700 transition"
-                    >
-                        <FaTrash />
-                    </button>
-                </div>
-            ))}
+            {filteredChats
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                .map((chat, index) => (
+                    <div key={index} className="flex items-center gap-4 rounded-lg hover:bg-gray-700 p-2 justify-between">
+                        <Link
+                            href={`/chat/${chat.id}`}
+                            className="block flex-1 transition w-full cursor-pointer"
+                        >
+                            <div className="flex justify-between mb-1">
+                                <span className={`${isExpanded ? 'block' : 'hidden'}`}>{chat.name}</span>
+                                <span className="text-gray-400 text-sm">{formatDate(chat.created_at)}</span>
+                            </div>
+                            <p className={`text-gray-300 text-sm ${isExpanded ? 'block' : 'hidden'}`}>
+                                {chat.chat[0].parts[0].text}
+                            </p>
+                        </Link>
+                        <button
+                            onClick={() => handleDeleteClick(chat.id)}
+                            className="text-gray-400 hover:text-red-500 transition"
+                        >
+                            <FaTrash />
+                        </button>
+                    </div>
+                ))}
 
             {showDeleteModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 transition-opacity duration-300">

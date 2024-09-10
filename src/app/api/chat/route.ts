@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
         let result = await chat.sendMessage(message);
 
-        const titleMessage = "Summarize this conversation in a short, meaningful title. a short phrase that i can directly use as a converstation name";
+        const titleMessage = "Summarize this conversation in a short, meaningful title. a short phrase that i can directly use as a converstation name. not more than 6 words";
         let titleResult = await chat.sendMessage(titleMessage);
 
         return NextResponse.json({

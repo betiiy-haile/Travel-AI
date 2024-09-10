@@ -67,7 +67,7 @@ export const fetchChatHistory = async (chatId: String) => {
 
     const { data, error } = await supabase
         .from('chats')
-        .select('chat')
+        .select('*')
         .eq('id', chatId)
         .single();
 

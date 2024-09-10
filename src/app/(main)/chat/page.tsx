@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../_components/Sidebar";
 import { IoSend } from 'react-icons/io5';
-import { createNewChat, handleNewMessage } from '@/actions/chats';
+import { createNewChat, handleNewMessage, fetchChatHistory } from '@/actions/chats';
 import { useRouter } from 'next/navigation';
 import Markdown from 'markdown-to-jsx'
 import { createClient } from '@/utils/supabase/client';
@@ -21,19 +21,19 @@ const ChatPage = () => {
 
     const supabase = createClient();
 
-    // useEffect(() => {
-    //     const checkAuth = async () => {
-    //         const { data, error } = await supabase.auth.getSession();
-    //         const { data: userData, error: userError} = await supabase.auth.getUser();
-    //         if (error || !data.session) {
-    //             router.push('/login'); // Redirect to login if there's no session
-    //         } else {
-    //             console.log('User authenticated:', data.session.user);
-    //         }
-    //     };
+    useEffect(() => {
+        const checkAuth = async () => {
+            const { data, error} = await supabase.auth.getUser();
+            console.log("data" , data)
+            if (error || !data.user) {
+                router.push('/login'); // Redirect to login if there's no session
+            } else {
+                console.log('User authenticated:', data.user);
+            }
+        };
 
-    //     checkAuth();
-    // }, []);
+        checkAuth();
+    }, []);
 
 
     const createChatMessage = (role: "user" | "model", text: string) => ({
@@ -82,22 +82,20 @@ const ChatPage = () => {
     };
 
 
-
-
-
-
     return (
         <div className="flex h-screen">
             <Sidebar />
 
             <div className="flex-1 pt-16 pb-8 px-40">
                 <div className="shadow-lg rounded-lg p-6 h-full relative ">
-                    <h2 className="text-2xl font-bold mb-4 text-white">Chat with Gemini</h2>
-                    <div className="flex flex-col space-y-4 overflow-y-auto h-[calc(100%-7rem)]">
-                        {contents.map((msg, index) => (
-                            <div key={index} className={`flex items-start ${msg.role == 'model' ? 'bg-gray-700' : 'bg-blue-600'} p-3 rounded-lg`}>
-                                <p className="font-semibold text-white">{msg.role == 'model' ? 'Response:' : 'You:'}</p>
-                                <Markdown>{msg.parts[0].text}</Markdown>
+                    <h2 className="text-2xl font-bold mb-4 text-white">😊 Hello, How can I help you?</h2>
+                    <div className="flex flex-col py-24 space-y-4 overflow-y-auto h-[calc(100%-7rem)]">
+                        {contents && contents.map((msg, index) => (
+                            <div key={index} className={`flex items-start mb-4 ${msg.role === 'model' ? 'justify-start' : 'justify-end'}`}>
+                                <div key={index} className={`p-6 text-slate-400 rounded-lg w-[85%] ${msg.role === 'model' ? 'bg-gray-800' : 'bg-blue-600'}`}>
+                                    <p className="font-semibold mb-1">{msg.role === 'model' ? 'Response:' : 'You:'}</p>
+                                    <Markdown >{msg.parts[0].text}</Markdown>
+                                </div>
                             </div>
                         ))}
                     </div>

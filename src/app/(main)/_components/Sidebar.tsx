@@ -5,11 +5,11 @@ import { MdOutlineSearch, MdLogout, MdOutlineAdd } from "react-icons/md";
 import { GoSidebarExpand } from "react-icons/go";
 import { GoSidebarCollapse } from "react-icons/go";
 import { getAllChats } from '@/actions/chats';
-import Link from 'next/link';
 import { useRouter } from "next/navigation"
 import { signOut } from '@/actions/auth'
 import LogoutModal from './LogoutModal';
 import ChatList from './ChatLists';
+import { createClient } from '@/utils/supabase/client';
 
 interface Message {
     parts: { text: string }[];
@@ -31,6 +31,22 @@ const Sidebar = () => {
     const [chats, setChats] = useState<Chat[]>([])
     const [showLogoutModal, setShowLogoutModal] = useState(false); 
     const router = useRouter();
+    const [userName, setUserName] = useState('');
+    const [avatorPic, setAvatorPic] = useState('');
+    const supabase = createClient();
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            setUserName(user?.user_metadata?.full_name || '');
+            setAvatorPic(user?.user_metadata?.avatar_url || '');
+            if (error || !user) {
+                router.push('/login'); // Redirect to login if there's no session
+            }
+        };
+
+        checkAuth();
+    }, []);
 
     const fetchChats = async () => {
         const { data, error } = await getAllChats();
@@ -86,9 +102,14 @@ const Sidebar = () => {
             <ChatList filteredChats={filteredChats as Chat[]} isExpanded={isExpanded} fetchChats={fetchChats}/>
             <div className="mt-4 flex flex-col gap-4">
                 <div className='flex items-center gap-4 w-full'>
-                    <div className='bg-green-700 flex items-center justify-center p-4 w-12 h-12 rounded-full'>B</div>
+                    {/* <div className='bg-green-700 flex items-center justify-center p-4 w-12 h-12 rounded-full'>B</div> */}
+                    <img
+                        src={avatorPic}
+                        alt="Avatar"
+                        className="w-12 h-12 rounded-full"
+                    />
                     {
-                        isExpanded && <span>Betelhem Haile</span>
+                        isExpanded && <span>{userName}</span>
                     }
                 </div>
                 <button className="button-gradient text-white p-2 rounded-lg w-full  transition" onClick={() => router.push('/chat')}>

@@ -90,15 +90,7 @@ export const signOut = async () => {
 };
 
 
-export const googleLogin = async () => {
-    const supabase = await createClient();
 
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-
-    if (error) {
-        throw new Error('Google login failed');
-    }
-};
 
 // export async function getUserInfo() {
 //     const supabase = await createClient()
@@ -130,27 +122,27 @@ export const googleLogin = async () => {
 //     redirect('/login')
 // }
 
-// export async function googleLogin() {
-//     const supabase = await createClient();
-//     const user = await supabase.auth.getUser();
-//     console.log("user", user)
-//     const origin = headers().get('origin');
-//     const { error, data } = await supabase.auth.signInWithOAuth({
-//         provider: 'google',
-//         options: {
-//             redirectTo: `${origin}/auth/callback`,
-//         },
-//     });
+export async function googleLogin() {
+    const supabase = await createClient();
+    const user = await supabase.auth.getUser();
+    console.log("user", user)
+    const origin = headers().get('origin');
+    const { error, data } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: `${origin}/auth/callback`,
+        },
+    });
 
-//     console.log('sign in with google data', data);
+    console.log('sign in with google data', data);
 
-//     if (error) {
-//         console.log(error);
-//     } else {
-//         console.log("trying to rediredt to");
-//         redirect(data.url);
-//     }
-// }
+    if (error) {
+        console.log(error);
+    } else {
+        console.log("trying to rediredt to");
+        redirect(data.url);
+    }
+}
 
 
 

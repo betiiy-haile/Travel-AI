@@ -24,7 +24,6 @@ const ChatPage = () => {
     useEffect(() => {
         const checkAuth = async () => {
             const { data, error} = await supabase.auth.getUser();
-            console.log("data" , data)
             if (error || !data.user) {
                 router.push('/login'); // Redirect to login if there's no session
             } else {
@@ -83,18 +82,19 @@ const ChatPage = () => {
 
 
     return (
-        <div className="flex h-screen">
+        <div className="flex flex-col md:flex-row h-screen">
             <Sidebar />
 
-            <div className="flex-1 pt-16 pb-8 px-40">
+            <div className="flex-1 pt-8 pb-8 px-4 md:px-8 lg:px-16 xl:px-40">
                 <div className="shadow-lg rounded-lg p-6 h-full relative ">
                     <h2 className="text-2xl font-bold mb-4 text-white">😊 Hello, How can I help you?</h2>
-                    <div className="flex flex-col py-24 space-y-4 overflow-y-auto h-[calc(100%-7rem)]">
+
+                    <div className="flex flex-col py-8 md:py-12 space-y-4 overflow-y-auto h-[calc(100%-7rem)]">
                         {contents && contents.map((msg, index) => (
                             <div key={index} className={`flex items-start mb-4 ${msg.role === 'model' ? 'justify-start' : 'justify-end'}`}>
-                                <div key={index} className={`p-6 text-slate-400 rounded-lg w-[85%] ${msg.role === 'model' ? 'bg-gray-800' : 'bg-blue-600'}`}>
+                                <div className={`p-4 md:p-6 text-slate-400 rounded-lg w-[75%] lg:w-[85%] ${msg.role === 'model' ? 'bg-gray-800' : 'bg-blue-600'}`}>
                                     <p className="font-semibold mb-1">{msg.role === 'model' ? 'Response:' : 'You:'}</p>
-                                    <Markdown >{msg.parts[0].text}</Markdown>
+                                    <Markdown>{msg.parts[0].text}</Markdown>
                                 </div>
                             </div>
                         ))}

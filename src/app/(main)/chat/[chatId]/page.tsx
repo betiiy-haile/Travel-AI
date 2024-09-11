@@ -77,23 +77,28 @@ const ChatDetailPage = () => {
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
+      {/* Sidebar remains unchanged */}
       <Sidebar />
-      <div className="flex-1  pb-8 px-40 flex flex-col">
-        <div className="shadow-lg rounded-lg p-6 h-full relative flex flex-col justify-between ">
+
+      {/* Main Chat Section */}
+      <div className="flex-1 pt-8 pb-8 px-4 md:px-8 lg:px-16 xl:px-40 flex flex-col">
+        <div className="shadow-lg rounded-lg p-6 h-full relative flex flex-col justify-between">
           <h2 className="text-2xl font-semibold mb-4">{title}</h2>
 
-          <div className="flex-1 py-24 overflow-y-auto pr-4" style={{ scrollbarWidth: 'none' }}>
+          {/* Chat Messages */}
+          <div className="flex-1 py-4 overflow-y-auto pr-2" style={{ scrollbarWidth: 'none' }}>
             {contents && contents.map((msg, index) => (
               <div key={index} className={`flex items-start mb-4 ${msg.role === 'model' ? 'justify-start' : 'justify-end'}`}>
-                <div key={index} className={`p-6 text-slate-400 rounded-lg w-[85%] ${msg.role === 'model' ? 'bg-gray-800' : 'bg-blue-600'}`}>
+                <div className={`p-4 text-slate-400 rounded-lg w-full md:w-[85%] ${msg.role === 'model' ? 'bg-gray-800' : 'bg-blue-600'}`}>
                   <p className="font-semibold mb-1">{msg.role === 'model' ? 'Response:' : 'You:'}</p>
-                  <Markdown >{msg.parts[0].text}</Markdown>
+                  <Markdown>{msg.parts[0].text}</Markdown>
                 </div>
               </div>
             ))}
             <div ref={messageEndRef} />
           </div>
 
+          {/* Input Field */}
           <div className="flex items-center mt-4">
             <input
               type="text"
@@ -112,6 +117,8 @@ const ChatDetailPage = () => {
         </div>
       </div>
     </div>
+
+
   );
 };
 

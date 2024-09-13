@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { signInWithEmail, googleLogin } from '@/actions/auth';  // Add your auth actions here
 
 const Page = () => {

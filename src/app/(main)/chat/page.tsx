@@ -87,7 +87,10 @@ const ChatPage = () => {
 
             <div className="flex-1 pt-8 pb-8 px-4 md:px-8 lg:px-16 xl:px-40">
                 <div className="shadow-lg rounded-lg p-6 h-full relative ">
-                    <h2 className="text-2xl font-bold mb-4 text-white">😊 Hello, How can I help you?</h2>
+                    <div className='flex  justify-between items-center'>
+                        <h2 className="text-2xl font-bold mb-4 text-white">😊 Hello, How can I help you?</h2>
+                        <button onClick={() => router.push('/places')} className='px-6 py-2 rounded-lg button-gradient '>Search Place </button>
+                    </div>
 
                     <div className="flex flex-col py-8 md:py-12 space-y-4 overflow-y-auto h-[calc(100%-7rem)]">
                         {contents && contents.map((msg, index) => (

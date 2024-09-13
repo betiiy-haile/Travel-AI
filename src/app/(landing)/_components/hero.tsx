@@ -8,6 +8,7 @@ const Hero = () => {
     const handleClick = () => {
         router.push("/login")
     }
+    
     return (
         <section className="h-[70vh] flex items-center justify-center relative">
             <div className="w-full md:w-4/5 lg:w-3/4 text-center flex flex-col gap-6 px-4 md:px-0">

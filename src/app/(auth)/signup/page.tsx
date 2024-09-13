@@ -20,7 +20,8 @@ const Page = () => {
 
         try {
             const res = await signup(formData);
-        } catch (err: any) {
+            console.log("res", res)
+        } catch (err) {
             console.log('Signup failed. Please try again.', err);
         } finally {
             setLoading(false);

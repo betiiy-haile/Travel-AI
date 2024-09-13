@@ -6,6 +6,7 @@ import { IoSend } from 'react-icons/io5';
 import { handleNewMessage, fetchChatHistory } from '@/actions/chats';
 import { useParams } from 'next/navigation';
 import Markdown from 'markdown-to-jsx'
+import { useRouter } from 'next/navigation';
 
 interface Message {
   parts: { text: string }[];
@@ -16,6 +17,7 @@ const ChatDetailPage = () => {
   const [contents, setContents] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [title, setTitle] = useState<string>("😊 Hello, How can I help you?");
+  const router = useRouter();
 
   const { chatId } = useParams();
   useEffect(() => {
@@ -76,16 +78,16 @@ const ChatDetailPage = () => {
 
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
-      {/* Sidebar remains unchanged */}
+    <div className="flex h-screen text-white">
       <Sidebar />
 
-      {/* Main Chat Section */}
       <div className="flex-1 pt-8 pb-8 px-4 md:px-8 lg:px-16 xl:px-40 flex flex-col">
         <div className="shadow-lg rounded-lg p-6 h-full relative flex flex-col justify-between">
-          <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+          <div className='flex  justify-between items-center'>
+            <h2 className="text-2xl font-bold mb-4 text-white">{title}</h2>
+            <button onClick={() => router.push('/places')} className='px-6 py-2 rounded-lg button-gradient '>Search Place </button>
+          </div>
 
-          {/* Chat Messages */}
           <div className="flex-1 py-4 overflow-y-auto pr-2" style={{ scrollbarWidth: 'none' }}>
             {contents && contents.map((msg, index) => (
               <div key={index} className={`flex items-start mb-4 ${msg.role === 'model' ? 'justify-start' : 'justify-end'}`}>
@@ -98,7 +100,6 @@ const ChatDetailPage = () => {
             <div ref={messageEndRef} />
           </div>
 
-          {/* Input Field */}
           <div className="flex items-center mt-4">
             <input
               type="text"

@@ -48,17 +48,13 @@ export async function POST(req: NextRequest) {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: "You are an expert on recreational places in Ethiopia, including restaurants, game zones, parks, and movie theaters. Provide detailed and accurate information about these locations based on user queries." });
 
-        // Send the user's first message and system message in the same request
         const chat = await model.startChat({
                     history: contents
                 });
 
-        // Send the user's message again within the context of the conversation
-        let result = await chat.sendMessage(message);
-
-        // Generate a title for the conversation
+        const result = await chat.sendMessage(message);
         const titleMessage = "Summarize this conversation in a short, meaningful title. A short phrase that can be used as a conversation name, not more than 6 words.";
-        let titleResult = await chat.sendMessage(titleMessage);
+        const titleResult = await chat.sendMessage(titleMessage);
 
         return NextResponse.json({
             response: result.response.text(),

@@ -22,7 +22,7 @@ const Page = () => {
             const res = await signInWithEmail(formData);
             console.log("res from passwordless Login", res)
             setMessage('Check your email for the login link!');
-        } catch (err: any) {
+        } catch (err) {
             setMessage('Login failed. Please try again.');
             console.log('Login failed. Please try again.', err);
         } finally {
@@ -36,7 +36,7 @@ const Page = () => {
 
         try {
             await googleLogin(); // Call Google login action
-        } catch (err: any) {
+        } catch (err) {
             setMessage('Google login failed. Please try again.');
             console.log('Google login failed.', err);
         } finally {

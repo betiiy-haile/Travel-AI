@@ -58,12 +58,10 @@ export const saveChatHistory = async (messages: Message[]) => {
 }
 
 
-export const fetchChatHistory = async (chatId: String) => {
+export const fetchChatHistory = async (chatId: string) => {
 
     const supabase = await createClient()
     const { data: { user }} = await supabase.auth.getUser();
-
-    const userId = user?.id;
 
     const { data, error } = await supabase
         .from('chats')
@@ -83,10 +81,7 @@ export const fetchChatHistory = async (chatId: String) => {
 
 export const updateChatHistory = async (chatId: string, updatedChat: any[]) => {
     const supabase = await createClient()
-    const { data: { user }} = await supabase.auth.getUser();
-    const userId = user?.id;
-
-
+  
     const { error } = await supabase
         .from('chats')
         .update({ chat: updatedChat })
@@ -99,7 +94,7 @@ export const updateChatHistory = async (chatId: string, updatedChat: any[]) => {
 
 
 export const handleNewMessage = async (chatId: string, userMessage: string, modelResponse: string) => {
-    const supabase = await createClient()
+   
     try {
         const { chat: existingChat } = await fetchChatHistory(chatId);
 

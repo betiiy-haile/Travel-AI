@@ -96,9 +96,10 @@ const Page = () => {
                         </p>
                     )}
 
-                    <p className="text-gray-400 mt-6 text-center">
+                    {/* <p className="text-gray-400 mt-6 text-center">
                         Don{"'"}t have an account? <Link href="/sign-up" className="text-blue-400 hover:underline">Sign Up</Link>
-                    </p>
+                    </p> */}
+                    <p className='text-gray-300 mt-6 text-center'>or</p>
 
                     <div className="mt-8">
                         <button onClick={handleGoogleLogin} className="w-full bg-blue-600 text-white p-3 rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-105 transition-transform duration-200">

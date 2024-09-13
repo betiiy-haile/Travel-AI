@@ -68,7 +68,8 @@ export const signInWithEmail = async (formData: FormData) => {
         email: email,
         options: {
             shouldCreateUser: true,
-            emailRedirectTo: 'http://localhost:3000/chat',
+            // emailRedirectTo: 'http://localhost:3000/chat',
+            emailRedirectTo: 'https://automate-travel.vercel.app/chat',
         },
     })
 

@@ -46,12 +46,12 @@ const Sidebar = () => {
         };
 
         checkAuth();
-    }, []);
+    }, [router, supabase.auth]);
 
     const fetchChats = async () => {
-        const { data, error } = await getAllChats();
+        const { data } = await getAllChats();
         console.log("data", data)
-        setChats(data as any || [])
+        setChats(data as Chat[] || [])
     }
 
     useEffect(() => {
@@ -73,7 +73,7 @@ const Sidebar = () => {
 
     const handleLogoutConfirm = async () => {
         setShowLogoutModal(false); 
-        const res = await signOut();
+        await signOut();
         router.push('/login'); // Redirect to login after successful logout
     };
 

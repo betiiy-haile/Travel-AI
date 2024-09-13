@@ -1,8 +1,7 @@
-import { NextApiRequest } from 'next';
-import { NextResponse } from 'next/server';
 
-export async function GET(req: NextApiRequest) {
-    const { searchParams } = new URL(req.url as string);
+
+export async function GET(req) {
+    const { searchParams } = new URL(req.url);
     const placeId = searchParams.get('placeId');
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;

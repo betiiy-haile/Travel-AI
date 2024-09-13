@@ -3,25 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoSend } from 'react-icons/io5';
+import { Place } from '@/utils/types';
 
-interface Place {
-    business_status: string;
-    geometry: any;
-    icon: string;
-    icon_background_color: string;
-    icon_mask_base_uri: string;
-    name: string;
-    opening_hours: any;
-    photos: any[];
-    place_id: string;
-    rating?: number;
-    reference: string;
-    types: string[];
-    user_ratings_total?: number;
-    vicinity: string;
-}
-
-const page = () => {
+const PlacesPage = () => {
     const [input, setInput] = useState('');
     const [places, setPlaces] = useState<Place[]>([]);
     const [location, setLocation] = useState<string | null>(null);
@@ -120,5 +104,5 @@ const page = () => {
     );
 };
 
-export default page;
+export default PlacesPage;
 

@@ -19,7 +19,7 @@ export default function PrivatePage() {
         };
 
         checkAuth();
-    }, []);
+    }, [router, supabase.auth]);
 
     return <p>Welcome! You are now logged in.</p>;
 }

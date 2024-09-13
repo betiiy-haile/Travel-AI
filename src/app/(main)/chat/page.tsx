@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "../_components/Sidebar";
 import { IoSend } from 'react-icons/io5';
-import { createNewChat, handleNewMessage, fetchChatHistory } from '@/actions/chats';
+import { createNewChat, handleNewMessage } from '@/actions/chats';
 import { useRouter } from 'next/navigation';
 import Markdown from 'markdown-to-jsx'
 import { createClient } from '@/utils/supabase/client';
@@ -32,7 +32,7 @@ const ChatPage = () => {
         };
 
         checkAuth();
-    }, []);
+    }, [router, supabase.auth]);
 
 
     const createChatMessage = (role: "user" | "model", text: string) => ({

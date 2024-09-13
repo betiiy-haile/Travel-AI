@@ -27,7 +27,7 @@ export default function Home() {
     };
 
     checkUser();
-  }, [router]);
+  }, [router, supabase.auth]);
 
   return (
     <main>

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import {  useParams } from 'next/navigation';
 import Image from 'next/image';
 
 interface PlaceDetails {
@@ -19,7 +19,6 @@ interface PlaceDetails {
 }
 
 const PlaceDetailsPage = () => {
-    const router = useRouter();
     const { placeId } = useParams();
 
     const [placeDetails, setPlaceDetails] = useState<PlaceDetails | null>(null);

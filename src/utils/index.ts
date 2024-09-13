@@ -12,13 +12,13 @@ export const formatDate = (isoDateString: string) => {
             minute: '2-digit',
             hour12: true,
         };
-        return dateObj.toLocaleString('en-US', timeOptions as any);
+        return dateObj.toLocaleString('en-US', timeOptions as object);
     } else {
         const dateOptions = {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         };
-        return dateObj.toLocaleString('en-US', dateOptions as any);
+        return dateObj.toLocaleString('en-US', dateOptions as object);
     }
 }

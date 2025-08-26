@@ -21,6 +21,12 @@ const Navbar = () => {
             Find Places
           </Link>
           <Link
+            href="/chat"
+            className="hidden md:inline text-white/75 hover:text-white text-sm px-2 py-1"
+          >
+            Get Suggestions
+          </Link>
+          <Link
             href="/favorites"
             className="hidden md:inline text-white/75 hover:text-white text-sm px-2 py-1"
           >
